@@ -1,0 +1,108 @@
+﻿@page
+@model TestingPsychics.Pages.IndexModel
+@using TestingPsychics.Models
+@{
+    ViewData["Title"] = "Тест экстрасенсов";
+}
+
+<div class="text-center">
+    <h1 class="text-center mb-4">Тест экстрасенсов</h1>
+    @if (Model.SessionData != null && !Model.SessionData.HasGuessed)
+    {
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h3>Загадайте двузначное число</h3>
+                <form asp-action="StartGuessing" method="post">
+                    <button type="submit" class="btn btn-primary btn-lg">Я загадал число</button>
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="text-center">Догадки экстрасенсов:</h4>
+                <div class="row">
+                    @foreach (var psychic in Model.SessionData.Psychics)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h5>@psychic.Name</h5>
+                                    <p class="display-4">@psychic.LastGuess</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @{
+                    var userNumber = new User();
+                }
+
+                <form asp-action="SubmitNumber" method="post" class="text-center">
+                    <div class="mb-3">
+                        <label for="UserNumber" class="form-label">Введите ваше число:</label>
+                        <input type="number" id="UserNumber" name="UserNumber"
+                               min="10" max="99" required
+                               class="form-control mx-auto" style="width: 200px;">
+                        @Html.ValidationMessage("UserNumber", new { @class = "text-danger" })
+                    </div>
+                    <button type="submit" class="btn btn-success">Отправить</button>
+                </form>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>История догадок</h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var psychic in Model.SessionData.Psychics)
+                    {
+                        <p><strong>@psychic.Name:</strong> @string.Join(", ", psychic.GuessHistory)</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Ваши числа</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.SessionData.UserNumbers.Any())
+                    {
+                        <p>@string.Join(", ", Model.SessionData.UserNumbers)</p>
+                    }
+                    else
+                    {
+                        <p>Пока нет чисел</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Уровень достоверности</h5>
+                </div>
+                <div class="card-body">
+                    @foreach (var psychic in Model.SessionData.Psychics)
+                    {
+                        <p><strong>@psychic.Name:</strong> @psychic.Reliability</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a asp-action="Reset" class="btn btn-secondary">Сбросить всё</a>
+    </div>
+</div>
